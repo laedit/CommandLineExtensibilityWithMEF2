@@ -4,6 +4,7 @@ using System.CommandLine;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Composition;
+using System.Linq;
 
 namespace CommandLineExtensibility
 {
@@ -57,6 +58,9 @@ namespace CommandLineExtensibility
 
         [ImportMany]
         public IEnumerable<Command> RealCommands { get; set; }
+
+        [ImportMany]
+        public IEnumerable<ICommandArgumentsExtension> CommandArgExtensions { get; set; }
 
         public Task<int> Start(string[] args)
         {
