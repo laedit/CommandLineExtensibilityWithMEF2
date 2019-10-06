@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CommandLine;
+using System.CommandLine.Invocation;
 using System.Composition;
 using System.Composition.Convention;
 using System.Composition.Hosting;
@@ -13,8 +14,19 @@ namespace CommandLineExtensibility
 {
     internal static class Program
     {
-        static Task<int> Main(string[] args)
+        static async Task<int> Main(string[] args)
         {
+            var rootCommand = new RootCommand();
+            rootCommand.Arguments.Append(new Argument<DirectoryInfo>());
+            
+            rootCommand.Handler = CommandHandler.Create((DirectoryInfo source) =>
+            {
+                Console.WriteLine($"source: {source}");
+            });
+
+            await rootCommand.InvokeAsync(args);
+
+
             Console.WriteLine(IsDescendentOf(typeof(BuiltinCommand), typeof(ICommand<>)));
             //return Task.FromResult(1);
 
@@ -36,7 +48,7 @@ namespace CommandLineExtensibility
 
             container.SatisfyImports(starter);
 
-            return starter.Start(args);
+            return await starter.Start(args);
         }
         private static bool IsDescendentOf(Type type, Type baseType)
         {
